@@ -17,7 +17,7 @@ export class GameService implements OnModuleInit {
   }
 
   resetBoard() {
-    this.board = Array.from({ length: 5 }, () => Array(5).fill(null));
+    this.board = Array.from({ length: 15 }, () => Array(15).fill(null));
     this.currentPlayer = "A";
 
     // 🔁 リセット時には勝者はいない
@@ -66,17 +66,17 @@ export class GameService implements OnModuleInit {
       [[1, 1], [-1, -1]],
       [[1, -1], [-1, 1]],
     ];
-
+  
     for (const direction of directions) {
       let count = 1;
-
+  
       for (const [dy, dx] of direction) {
         let ny = y + dy;
         let nx = x + dx;
-
+  
         while (
-          ny >= 0 && ny < 5 &&
-          nx >= 0 && nx < 5 &&
+          ny >= 0 && ny < this.board.length &&
+          nx >= 0 && nx < this.board[0].length &&
           this.board[ny][nx] === player
         ) {
           count++;
@@ -84,13 +84,14 @@ export class GameService implements OnModuleInit {
           nx += dx;
         }
       }
-
+  
       if (count >= 5) {
         return player;
       }
     }
-
+  
     const isDraw = this.board.flat().every(cell => cell !== null);
     return isDraw ? "Draw" : null;
   }
+  
 }
