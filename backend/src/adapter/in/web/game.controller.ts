@@ -14,4 +14,9 @@ export class GameController {
   resetBoard() {
     return this.gameService.resetBoard();
   }
+
+  @Post('move')
+  makeMove(@Body() body: { X: number; Y: number; player: string }) {
+    return this.gameService.makeMove(body.X, body.Y, body.player);
+  }
 }
