@@ -1,10 +1,12 @@
 import { Injectable, OnModuleInit } from "@nestjs/common";
 import { GameGateway } from '../../adapter/in/websocket/game.gateway';
+import { BoardState, Player, MoveRequest } from '../../domain/model/game.types';
+import { ApiResponse } from '../../common/types/api-response';
 
 @Injectable()
 export class GameService implements OnModuleInit {
-  private board: (string | null)[][] = [];
-  private currentPlayer: "A" | "B" = "A";
+  private board: (Player | null)[][] = [];
+  private currentPlayer: Player = "A";
 
   constructor(private readonly gameGateway: GameGateway) {}
 
@@ -12,68 +14,86 @@ export class GameService implements OnModuleInit {
     this.resetBoard();
   }
 
-  getBoard() {
-    return { board: this.board, currentPlayer: this.currentPlayer };
+  getBoard(): ApiResponse<BoardState> {
+    return {
+      success: true,
+      data: {
+        board: this.board,
+        currentPlayer: this.currentPlayer,
+        winner: null,
+      },
+    };
   }
 
-  resetBoard() {
+  resetBoard(): ApiResponse<BoardState> {
     this.board = Array.from({ length: 15 }, () => Array(15).fill(null));
     this.currentPlayer = "A";
 
-    // 🔁 リセット時には勝者はいない
     this.gameGateway.emitBoardUpdate(this.board, this.currentPlayer, null);
 
-    return { board: this.board, currentPlayer: this.currentPlayer };
+    return {
+      success: true,
+      data: {
+        board: this.board,
+        currentPlayer: this.currentPlayer,
+        winner: null,
+      },
+    };
   }
 
-  makeMove(Y: number, X: number, player: string) {
+  makeMove(body: MoveRequest): ApiResponse<BoardState> {
+    const { X, Y, player } = body;
+
     if (this.board[Y][X] !== null || this.currentPlayer !== player) {
-      return { success: false };
+      return {
+        success: false,
+        error: "無効な操作です",
+      };
     }
 
     this.board[Y][X] = player;
     const winner = this.checkWinner(Y, X, player);
 
     if (winner) {
-      // ✅ 勝敗がついたときも全員に送信（winner あり）
       this.gameGateway.emitBoardUpdate(this.board, this.currentPlayer, winner);
       return {
         success: true,
-        board: this.board,
-        currentPlayer: this.currentPlayer,
-        winner,
+        data: {
+          board: this.board,
+          currentPlayer: this.currentPlayer,
+          winner,
+        },
       };
     }
 
-    // プレイヤー交代
     this.currentPlayer = player === "A" ? "B" : "A";
-
-    // ✅ 通常の手でも winner=null で送信
     this.gameGateway.emitBoardUpdate(this.board, this.currentPlayer, null);
 
     return {
       success: true,
-      board: this.board,
-      currentPlayer: this.currentPlayer,
-      winner: null,
+      data: {
+        board: this.board,
+        currentPlayer: this.currentPlayer,
+        winner: null,
+      },
     };
   }
 
-  private checkWinner(y: number, x: number, player: string): string | null {
+  private checkWinner(y: number, x: number, player: Player): Player | "Draw" | null {
     const directions: [number, number][][] = [
       [[0, 1], [0, -1]],
       [[1, 0], [-1, 0]],
       [[1, 1], [-1, -1]],
       [[1, -1], [-1, 1]],
     ];
-  
+
     for (const direction of directions) {
       let count = 1;
-  
+
       for (const [dy, dx] of direction) {
         let ny = y + dy;
         let nx = x + dx;
-  
+
         while (
           ny >= 0 && ny < this.board.length &&
           nx >= 0 && nx < this.board[0].length &&
@@ -84,14 +104,11 @@ export class GameService implements OnModuleInit {
           nx += dx;
         }
       }
-  
-      if (count >= 5) {
-        return player;
-      }
+
+      if (count >= 5) return player;
     }
-  
+
     const isDraw = this.board.flat().every(cell => cell !== null);
     return isDraw ? "Draw" : null;
   }
-  
 }
