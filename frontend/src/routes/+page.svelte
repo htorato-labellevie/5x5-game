@@ -8,7 +8,7 @@
   let player: string = '';
   let winner: string | null = null;
 
-  const BACKEND_URL = 'http://192.168.11.5:3000';
+  const BACKEND_URL = 'http://100.64.1.37:3000';
   const socket = io(BACKEND_URL);
 
   onMount(() => {
