@@ -8,7 +8,8 @@
   let player: string = '';
   let winner: string | null = null;
 
-  const BACKEND_URL = import.meta.env.PUBLIC_API_BASE_URL;
+  //const BACKEND_URL = import.meta.env.PUBLIC_API_BASE_URL;
+  const BACKEND_URL = 'http://192.168.11.5:3000';
   console.log('✅ BACKEND_URL in production:', BACKEND_URL);
   const socket = io(BACKEND_URL);
 
@@ -33,18 +34,17 @@
       const res = await fetch(`${BACKEND_URL}/game`);
       const json = await res.json();
 
-      if (json.success && json.data) {
+      if (json.success && json.data && Array.isArray(json.data.board)) {
         board = [...json.data.board];
         currentPlayer = json.data.currentPlayer;
         winner = json.data.winner ?? null;
       } else {
-        console.error('❌ fetchBoard エラー: success=false または dataが空');
+        console.error('❌ fetchBoard エラー: success=false または boardが不正');
       }
     } catch (e) {
       console.error('❌ fetchBoard エラー:', e);
     }
   };
-
 
   const makeMove = async (y: number, x: number) => {
     if (!player || player !== currentPlayer || winner) return;
@@ -52,14 +52,20 @@
     const res = await fetch(`${BACKEND_URL}/game/move`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ X: y, Y: x, player }),
+      body: JSON.stringify({ X: x, Y: y, player }),
     });
 
     const data = await res.json();
-    board = [...data.board];
-    currentPlayer = data.currentPlayer;
-    winner = data.winner;
+
+    if (data.success && data.data) {
+      board = [...data.data.board];
+      currentPlayer = data.data.currentPlayer;
+      winner = data.data.winner ?? null;
+    } else {
+      console.error('❌ makeMove エラー: success=false または dataが空');
+    }
   };
+
 
   const choosePlayer = async (symbol: string) => {
     player = symbol;

@@ -1,4 +1,11 @@
 {
+  "name": "5x5-game",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "db:push": "drizzle-kit push --config=drizzle.config.ts",
+    "db:generate": "drizzle-kit generate --config=drizzle.config.ts"
+  },
   "dependencies": {
     "@nestjs/cli": "^11.0.6",
     "dotenv": "^16.5.0",
