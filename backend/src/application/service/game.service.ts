@@ -1,14 +1,19 @@
-import { Injectable, OnModuleInit } from "@nestjs/common";
+import { Injectable, Inject, OnModuleInit } from "@nestjs/common";
 import { GameGateway } from '../../adapter/in/websocket/game.gateway';
 import { BoardState, Player, MoveRequest } from '../../domain/model/game.types';
 import { ApiResponse } from '../../common/types/api-response';
+import { PlayerRepository } from '../../domain/port/out/player-repository.port';
 
 @Injectable()
 export class GameService implements OnModuleInit {
   private board: (Player | null)[][] = [];
   private currentPlayer: Player = "A";
 
-  constructor(private readonly gameGateway: GameGateway) {}
+  constructor(
+    private readonly gameGateway: GameGateway,
+    @Inject('PlayerRepository')
+    private readonly playerRepository: PlayerRepository,
+  ) {}
 
   onModuleInit() {
     this.resetBoard();
@@ -110,5 +115,21 @@ export class GameService implements OnModuleInit {
 
     const isDraw = this.board.flat().every(cell => cell !== null);
     return isDraw ? "Draw" : null;
+  }
+
+  /**
+   * 🔐 プレイヤー名を登録し、訪問回数を返す
+   */
+  async registerPlayer(name: string): Promise<number> {
+    const player = await this.playerRepository.findByName(name);
+
+    if (player) {
+      const newCount = player.visits + 1;
+      await this.playerRepository.updateVisits(name, newCount);
+      return newCount;
+    } else {
+      await this.playerRepository.create({ name, visits: 1 });
+      return 1;
+    }
   }
 }
