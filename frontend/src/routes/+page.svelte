@@ -9,6 +9,7 @@
   let winner: string | null = null;
 
   const BACKEND_URL = import.meta.env.PUBLIC_API_BASE_URL;
+  console.log('✅ BACKEND_URL in production:', BACKEND_URL);
   const socket = io(BACKEND_URL);
 
   onMount(() => {
