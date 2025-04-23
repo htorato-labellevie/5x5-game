@@ -8,8 +8,8 @@
   let player: string = '';
   let winner: string | null = null;
 
-  //const BACKEND_URL = import.meta.env.PUBLIC_API_BASE_URL;
-  const BACKEND_URL = 'http://192.168.11.5:3000';
+  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+  //const BACKEND_URL = 'http://192.168.11.5:3000';
   const socket = io(BACKEND_URL);
 
   onMount(() => {
