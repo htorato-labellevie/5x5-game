@@ -8,7 +8,7 @@
   let player: string = '';
   let winner: string | null = null;
 
-  const BACKEND_URL = 'http://100.64.1.37:3000';
+  const BACKEND_URL = import.meta.env.PUBLIC_API_BASE_URL;
   const socket = io(BACKEND_URL);
 
   onMount(() => {
