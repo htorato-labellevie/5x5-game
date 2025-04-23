@@ -30,13 +30,20 @@
   const fetchBoard = async () => {
     try {
       const res = await fetch(`${BACKEND_URL}/game`);
-      const data = await res.json();
-      board = [...data.board];
-      currentPlayer = data.currentPlayer;
+      const json = await res.json();
+
+      if (json.success && json.data) {
+        board = [...json.data.board];
+        currentPlayer = json.data.currentPlayer;
+        winner = json.data.winner ?? null;
+      } else {
+        console.error('❌ fetchBoard エラー: success=false または dataが空');
+      }
     } catch (e) {
       console.error('❌ fetchBoard エラー:', e);
     }
   };
+
 
   const makeMove = async (y: number, x: number) => {
     if (!player || player !== currentPlayer || winner) return;
