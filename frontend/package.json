@@ -11,7 +11,7 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"db:push": "drizzle-kit push:pg",
-        "db:generate": "drizzle-kit generate:pg"
+		"db:generate": "drizzle-kit generate:pg"
 	},
 	"dependencies": {
 		"dotenv": "^16.5.0",
