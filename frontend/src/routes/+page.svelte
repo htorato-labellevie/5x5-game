@@ -14,7 +14,7 @@
     <h1 class="text-2xl font-bold mb-4">🎮 プレイヤー名を入力してください</h1>
     <input
       bind:value={playerName}
-      placeholder="例: Hirofumi"
+      placeholder=""
       class="border p-2 rounded mb-4"
     />
     <button

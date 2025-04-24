@@ -8,8 +8,8 @@
   let player: string = '';
   let winner: string | null = null;
 
-  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
-  //const BACKEND_URL = 'http://192.168.11.5:3000';
+  //const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+  const BACKEND_URL = 'http://192.168.11.5:3000';
   const socket = io(BACKEND_URL);
 
   onMount(() => {
@@ -239,7 +239,6 @@
     <button class="bg-red-500 text-white px-4 py-2" on:click={() => choosePlayer('B')}>B でプレイ</button>
   {:else}
     <div class="mb-4">
-      <p>あなたの記号: <strong>{player}</strong></p>
       <p>現在のターン: <strong>{currentPlayer}</strong></p>
     </div>
 

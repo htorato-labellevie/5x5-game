@@ -7,7 +7,7 @@ import { Server } from 'socket.io';
 @WebSocketGateway({ cors: true })
 export class GameGateway {
   @WebSocketServer()
-  server: Server;
+  server!: Server;
 
   emitBoardUpdate(board: (string | null)[][], currentPlayer: string, winner: string | null) {
     this.server.emit('boardUpdated', { board, currentPlayer, winner });

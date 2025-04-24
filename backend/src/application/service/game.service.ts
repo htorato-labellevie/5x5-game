@@ -2,7 +2,7 @@ import { Injectable, Inject, OnModuleInit } from "@nestjs/common";
 import { GameGateway } from '../../adapter/in/websocket/game.gateway';
 import { BoardState, Player, MoveRequest } from '../../domain/model/game.types';
 import { ApiResponse } from '../../common/types/api-response';
-import { PlayerRepository } from '../../domain/port/out/player-repository.port';
+import { PlayerPersistencePort } from '../../domain/port/out/player-persistence.port';
 
 @Injectable()
 export class GameService implements OnModuleInit {
@@ -12,7 +12,7 @@ export class GameService implements OnModuleInit {
   constructor(
     private readonly gameGateway: GameGateway,
     @Inject('PlayerRepository')
-    private readonly playerRepository: PlayerRepository,
+    private readonly playerRepository: PlayerPersistencePort,
   ) {}
 
   onModuleInit() {
