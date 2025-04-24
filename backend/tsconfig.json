@@ -13,13 +13,17 @@
     "incremental": true,
     "esModuleInterop": true,
     "strict": true,
-    "types": ["node", "jest"],
+    "types": ["node", "jest"],  // 👈 Jest の型定義も有効
     "skipLibCheck": true
   },
-  "include": ["src/**/*", "test/**/*"],
+  "include": [
+    "src/**/*",
+    "test/**/*"   // 👈 テストディレクトリを明示的に含める
+  ],
   "exclude": [
     "node_modules",
     "dist",
+    // 👇 Drizzle ORM の除外対象を明示
     "node_modules/drizzle-orm/mysql-core",
     "node_modules/drizzle-orm/sqlite-core",
     "node_modules/drizzle-orm/singlestore-core",
